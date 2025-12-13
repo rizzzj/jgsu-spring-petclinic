@@ -16,6 +16,7 @@ pipeline {
         stage('Build Application (Maven)') {
             steps {
                 sh './mvnw clean package -DskipTests'
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
                 sh 'ls'
             }
         }
@@ -23,7 +24,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t ${APP_NAME}:${IMAGE_TAG} .'
-                sh 'ls'
+                sh "docker save -o ${APP_NAME}-${IMAGE_TAG}.tar ${APP_NAME}:${IMAGE_TAG}"
+                archiveArtifacts artifacts: "${APP_NAME}-${IMAGE_TAG}.tar", fingerprint: true
             }
         }
     }
