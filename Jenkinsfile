@@ -1,14 +1,17 @@
 pipeline {
     agent any
+
     environment {
-        APP_NAME = "spring-petclinic"
-        IMAGE_TAG = "${BUILD_NUMBER}"
+        APP_NAME    = "spring-petclinic"
+        DOCKER_USER = "YOUR_DOCKERHUB_USERNAME"
+        IMAGE_TAG   = "${BUILD_NUMBER}"
+        IMAGE_NAME  = "${DOCKER_USER}/${APP_NAME}:${IMAGE_TAG}"
     }
 
     stages {
+
         stage('List Workspace') {
             steps {
-                sh 'ls'
                 sh 'ls -l'
             }
         }
@@ -17,18 +20,21 @@ pipeline {
             steps {
                 sh './mvnw clean package -DskipTests'
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-                sh 'ls'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t ${APP_NAME}:${IMAGE_TAG} .'
-                sh "docker save -o ${APP_NAME}-${IMAGE_TAG}.tar ${APP_NAME}:${IMAGE_TAG}"
+                // Build image with Docker Hub–compatible name
+                sh 'docker build -t ${IMAGE_NAME} .'
+
+                // Optional: save image as artifact
+                sh 'docker save -o ${APP_NAME}-${IMAGE_TAG}.tar ${IMAGE_NAME}'
                 archiveArtifacts artifacts: "${APP_NAME}-${IMAGE_TAG}.tar", fingerprint: true
             }
         }
-        stage('Test Docker Login') {
+
+        stage('Docker Push') {
             steps {
                 withCredentials([
                     usernamePassword(
@@ -39,6 +45,7 @@ pipeline {
                 ]) {
                     sh '''
                         echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                        docker push ${IMAGE_NAME}
                         docker logout
                     '''
                 }
