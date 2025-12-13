@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         APP_NAME    = "spring-petclinic"
-        DOCKER_USER = "YOUR_DOCKERHUB_USERNAME"
+        DOCKER_USER = "rizjosel"
         IMAGE_TAG   = "${BUILD_NUMBER}"
         IMAGE_NAME  = "${DOCKER_USER}/${APP_NAME}:${IMAGE_TAG}"
     }
