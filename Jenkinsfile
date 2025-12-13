@@ -8,5 +8,11 @@ pipeline {
                 sh 'ls -l'
             }
         }
+        stage('Build Application (Maven)') {
+            steps {
+                sh './mvnw clean package -DskipTests'
+                sh 'ls'
+            }
+        }
     }
 }
