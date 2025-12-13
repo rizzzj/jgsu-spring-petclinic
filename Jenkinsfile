@@ -28,9 +28,20 @@ pipeline {
                 archiveArtifacts artifacts: "${APP_NAME}-${IMAGE_TAG}.tar", fingerprint: true
             }
         }
-        stage('Run Docker Container') {
+        stage('Test Docker Login') {
             steps {
-                sh "docker run -d -p 9090:8080 ${APP_NAME}:${IMAGE_TAG}"
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USERNAME',
+                        passwordVariable: 'DOCKER_PASSWORD'
+                    )
+                ]) {
+                    sh '''
+                        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                        docker logout
+                    '''
+                }
             }
         }
     }
