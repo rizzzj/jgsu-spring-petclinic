@@ -28,5 +28,10 @@ pipeline {
                 archiveArtifacts artifacts: "${APP_NAME}-${IMAGE_TAG}.tar", fingerprint: true
             }
         }
+        stage('Run Docker Container') {
+            steps {
+                sh "docker run -d -p 9090:8080 ${APP_NAME}:${IMAGE_TAG}"
+            }
+        }
     }
 }
