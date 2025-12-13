@@ -8,18 +8,10 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('bash') {
             steps {
-                sh 'docker build -t spring-petclinic:${BUILD_NUMBER} .'
-            }
-        }
-
-        stage('Run Container') {
-            steps {
-                sh '''
-                  docker rm -f petclinic || true
-                  docker run -d -p 8080:8080 --name petclinic spring-petclinic:${BUILD_NUMBER}
-                '''
+                sh 'ls'
+                sh 'ls -l'
             }
         }
     }
