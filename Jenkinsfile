@@ -13,6 +13,7 @@ pipeline {
         stage('List Workspace') {
             steps {
                 sh 'ls -l'
+		sh 'ls'
             }
         }
 
