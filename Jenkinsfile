@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    environment {
+        APP_NAME = "spring-petclinic"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+}
 
     stages {
         stage('bash') {
@@ -12,6 +16,12 @@ pipeline {
             steps {
                 sh './mvnw clean package -DskipTests'
                 sh 'ls'
+            }
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t ${APP_NAME}:${IMAGE_TAG} .'
+                sh 'ls'
+                }
             }
         }
     }
